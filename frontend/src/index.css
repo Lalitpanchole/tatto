@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Outfit:wght@400;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Additional global custom styles */
+body {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+::-webkit-scrollbar-thumb {
+  background: #FF66C4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F4B6DE;
+}
+
+/* Premium custom dropdown styling globally */
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.85rem center !important;
+  background-size: 0.85em !important;
+  padding-right: 2.25rem !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  border-color: #FF66C4 !important;
+  box-shadow: 0 0 0 4px rgba(255, 102, 196, 0.1) !important;
+}
+
+/* Custom Animation Delay Classes */
+.delay-75 { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-250 { animation-delay: 250ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Global Scroll Animation Observer Styles */
+.animate-slide-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-slide-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-slide-up {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-fade-in {
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animation-running.animate-slide-in-left,
+.animation-running.animate-slide-in-right,
+.animation-running.animate-slide-up {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+.animation-running.animate-fade-in {
+  opacity: 1;
+}
+
+/* Custom Lucid Hover Effects */
+.hover-premium-lift {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-premium-lift:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 102, 196, 0.2);
+}
+.hover-pink-glow:hover {
+  box-shadow: 0 0 25px rgba(255, 102, 196, 0.25);
+  border-color: #FF66C4;
+}
+
+/* Pulsing and micro-movement glow animation for Book Button */
+@keyframes book-pulse {
+  0%, 100% {
+    transform: scale(1);
+    border-color: rgba(163, 163, 163, 0.4);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  50% {
+    transform: scale(1.035);
+    border-color: #FF66C4;
+    box-shadow: 0 0 25px rgba(255, 102, 196, 0.45);
+  }
+}
+.animate-book-pulse {
+  animation: book-pulse 2.2s infinite ease-in-out;
+}
+
+
+
