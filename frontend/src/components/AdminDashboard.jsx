@@ -174,7 +174,13 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
 
   // Modal States
   const [blockingModal, setBlockingModal] = React.useState(false);
-  const [blockForm, setBlockForm] = React.useState({ date: '2026-06-12', selectedStations: [1, 2, 3, 4], start: 10, end: 14, location: 'Zurich' });
+  const [blockForm, setBlockForm] = React.useState(() => {
+    const t = new Date();
+    const yyyy = t.getFullYear();
+    const mm = String(t.getMonth() + 1).padStart(2, '0');
+    const dd = String(t.getDate()).padStart(2, '0');
+    return { date: `${yyyy}-${mm}-${dd}`, selectedStations: [1, 2, 3, 4], start: 10, end: 14, location: 'Zurich' };
+  });
   const [unblockingModal, setUnblockingModal] = React.useState(null); // stores clicked blocked slot object
   const [showCancelledBlocks, setShowCancelledBlocks] = React.useState(false);
   const [deleteConfirmModal, setDeleteConfirmModal] = React.useState(null); // stores { message, onConfirm }
@@ -701,7 +707,7 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
               src="/logo-1.png" 
               alt="Tattooplatz Logo" 
               className="h-5.5 w-auto object-contain cursor-pointer transition-transform hover:scale-105" 
-              onClick={() => navigate('/')}
+              onClick={() => setActiveTab('overview')}
             />
             <button
               onClick={() => setIsMobileSidebarOpen(false)}

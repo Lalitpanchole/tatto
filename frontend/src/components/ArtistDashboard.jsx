@@ -227,8 +227,17 @@ export default function ArtistDashboard({ managerSettings, user, onLogout, onUpd
     setTimeout(() => setShowProfileSuccess(false), 3000);
   };
 
-  const confirmCancel = () => {
+  const confirmCancel = async () => {
     if (!cancellingBooking) return;
+
+    // Call MySQL Backend API to persist cancellation in database
+    try {
+      const { bookingAPI } = await import('../services/api.js');
+      await bookingAPI.cancelBooking(cancellingBooking.id);
+    } catch (err) {
+      console.log('Backend booking cancel offline:', err.message);
+    }
+
     // Mark as Cancelled in global state (keeps record for admin, removes from active slots)
     setBookings(prev => prev.map(b =>
       b.id === cancellingBooking.id ? { ...b, status: 'Cancelled' } : b
@@ -491,7 +500,7 @@ export default function ArtistDashboard({ managerSettings, user, onLogout, onUpd
               src="/logo-1.png"
               alt="Tattooplatz Logo"
               className="h-5.5 w-auto object-contain cursor-pointer transition-transform hover:scale-105"
-              onClick={() => navigate('/')}
+              onClick={() => setActiveTab('overview')}
             />
             <button
               onClick={() => setIsMobileSidebarOpen(false)}
