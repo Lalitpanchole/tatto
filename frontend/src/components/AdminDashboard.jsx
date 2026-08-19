@@ -90,6 +90,8 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
       });
       setPwdLoading(false);
       setPwdSuccess('Password updated successfully in database! Future logins will require your new password.');
+      const updatedUser = { ...activeUser, password: changePwdForm.newPassword };
+      localStorage.setItem('tattooplatz_current_user', JSON.stringify(updatedUser));
       setChangePwdForm({ currentPassword: changePwdForm.newPassword, newPassword: '', confirmPassword: '' });
     } catch (err) {
       setPwdLoading(false);
@@ -1956,15 +1958,16 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
                 </div>
 
                 {pwdError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold flex items-center gap-2">
-                    <ShieldAlert size={14} className="flex-shrink-0" />
-                    <span>{pwdError}</span>
+                  <div className="p-3.5 bg-pink-50/80 border border-pink-200 rounded-xl text-black text-xs font-semibold flex items-center gap-2.5 shadow-2xs animate-fade-in">
+                    <ShieldAlert size={16} className="text-pink-500 flex-shrink-0" />
+                    <span className="leading-snug text-black font-bold">{pwdError}</span>
                   </div>
                 )}
 
                 {pwdSuccess && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-semibold">
-                    {pwdSuccess}
+                  <div className="p-3.5 bg-pink-50/80 border border-pink-200 rounded-xl text-black text-xs font-semibold flex items-center gap-2.5 shadow-2xs animate-fade-in">
+                    <CheckCircle size={16} className="text-pink-500 flex-shrink-0" />
+                    <span className="leading-snug text-black font-bold">{pwdSuccess}</span>
                   </div>
                 )}
 

@@ -52,14 +52,6 @@ const seedDefaultUsers = async () => {
         await db.query('UPDATE users SET name = "Chris" WHERE LOWER(email) = "chris@tattooplatz.ch"');
         console.log('👑 Synced admin name to Chris for chris@tattooplatz.ch');
       }
-      // Ensure admin password hash matches admin123 if not valid
-      const isMatch = await bcrypt.compare('admin123', adminRows[0].password_hash);
-      if (!isMatch) {
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash('admin123', salt);
-        await db.query('UPDATE users SET password_hash = ? WHERE LOWER(email) = "chris@tattooplatz.ch"', [passwordHash]);
-        console.log('👑 Synced admin password to admin123 for chris@tattooplatz.ch');
-      }
     }
 
 
