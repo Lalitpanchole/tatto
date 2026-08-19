@@ -19,10 +19,11 @@ export const getAvailability = async (req, res) => {
     const maxClosing = Math.max(closingHour, openingHour + durationNum);
     const stationsCount = 4;
 
+    const cleanDate = typeof date === 'string' ? date.split('T')[0].split(' ')[0] : date;
     // Fetch all active bookings for this date
     const [activeBookings] = await db.query(
-      `SELECT station_id, start_hour, end_hour FROM bookings WHERE booking_date = ? AND status != 'Cancelled'`,
-      [date]
+      `SELECT station_id, start_hour, end_hour FROM bookings WHERE DATE(booking_date) = DATE(?) AND status != 'Cancelled'`,
+      [cleanDate]
     );
 
     let totalAvailableSpots = 0;

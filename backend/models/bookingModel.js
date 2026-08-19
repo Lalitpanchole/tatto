@@ -3,23 +3,25 @@ import db from '../config/db.js';
 export const BookingModel = {
   // Check if station has overlap for specific date & hours
   checkSlotOverlap: async (stationId, bookingDate, startHour, endHour) => {
+    const cleanDate = typeof bookingDate === 'string' ? bookingDate.split('T')[0].split(' ')[0] : bookingDate;
     const [rows] = await db.query(
       `SELECT * FROM bookings 
        WHERE station_id = ? 
-         AND booking_date = ? 
+         AND DATE(booking_date) = DATE(?) 
          AND status != 'Cancelled'
          AND ((start_hour <= ? AND end_hour > ?) OR (start_hour < ? AND end_hour >= ?) OR (start_hour >= ? AND end_hour <= ?))`,
-      [stationId, bookingDate, startHour, startHour, endHour, endHour, startHour, endHour]
+      [stationId, cleanDate, startHour, startHour, endHour, endHour, startHour, endHour]
     );
     return rows.length > 0;
   },
 
   // Create new booking reservation
   create: async ({ userId, stationId, bookingDate, startHour, endHour, totalPrice, location = 'Zurich', status = 'Confirmed' }) => {
+    const cleanDate = typeof bookingDate === 'string' ? bookingDate.split('T')[0].split(' ')[0] : bookingDate;
     const [result] = await db.query(
       `INSERT INTO bookings (user_id, station_id, booking_date, start_hour, end_hour, total_price, status, location)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, stationId, bookingDate, startHour, endHour, totalPrice, status, location]
+      [userId, stationId, cleanDate, startHour, endHour, totalPrice, status, location]
     );
     return result.insertId;
   },
