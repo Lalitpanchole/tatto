@@ -104,14 +104,11 @@ export const loginUser = async (req, res) => {
     // Match password
     const isMatch = await bcrypt.compare(cleanPassword, user.password_hash);
     if (!isMatch) {
-      console.warn(`🔐 [LOGIN FAILED 401] Incorrect password for email: "${cleanEmail}"`);
       return res.status(401).json({ message: 'Invalid credentials: Incorrect password entered.' });
     }
 
     // Generate token
     const token = generateToken(user.id, user.role);
-
-    console.log(`✅ [LOGIN SUCCESS] ${user.role.toUpperCase()} logged in: ${cleanEmail}`);
 
     res.json({
       message: 'Login successful',
@@ -153,8 +150,6 @@ export const updateProfile = async (req, res) => {
     }
 
     await UserModel.updateProfileByIdOrEmail(req.user.id, userEmail, { name, newEmail: targetEmail, phone, instagram, bio });
-
-    console.log(`👤 [PROFILE UPDATED] ${userEmail} -> Name: "${name}", Email: "${targetEmail}"`);
 
     res.json({
       message: 'Profile updated successfully',
