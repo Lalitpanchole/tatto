@@ -46,11 +46,21 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
   }, [currentUser]);
 
   // Password Change Form State (Settings tab)
-  const [changePwdForm, setChangePwdForm] = React.useState(() => ({
-    currentPassword: currentUser?.password || 'admin123',
-    newPassword: '',
-    confirmPassword: ''
-  }));
+  const [changePwdForm, setChangePwdForm] = React.useState(() => {
+    let savedPwd = '';
+    try {
+      const stored = localStorage.getItem('tattooplatz_current_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.password) savedPwd = parsed.password;
+      }
+    } catch (e) {}
+    return {
+      currentPassword: currentUser?.password || savedPwd || '123456',
+      newPassword: '',
+      confirmPassword: ''
+    };
+  });
   const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
   const [showNewPassword, setShowNewPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
@@ -59,10 +69,20 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
   const [pwdSuccess, setPwdSuccess] = React.useState('');
 
   React.useEffect(() => {
-    if (!changePwdForm.currentPassword) {
+    let savedPwd = activeUser?.password;
+    if (!savedPwd) {
+      try {
+        const stored = localStorage.getItem('tattooplatz_current_user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.password) savedPwd = parsed.password;
+        }
+      } catch (e) {}
+    }
+    if (savedPwd) {
       setChangePwdForm(prev => ({
         ...prev,
-        currentPassword: activeUser?.password || 'admin123'
+        currentPassword: savedPwd
       }));
     }
   }, [activeUser]);

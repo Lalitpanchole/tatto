@@ -124,6 +124,7 @@ export default function LoginPage({ onLoginSuccess, onBack, registeredArtists = 
         name: res.user.name,
         role: res.user.role,
         email: res.user.email,
+        password: password,
         phone: res.user.phone,
         ig: res.user.instagram,
         bio: res.user.bio || res.user.short_biography || ''
