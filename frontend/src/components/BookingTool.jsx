@@ -266,12 +266,22 @@ export default function BookingTool({ managerSettings, bookings = [], registered
 
   const availableSlots = getAvailableSlots();
 
+  const [blockedNoticeModal, setBlockedNoticeModal] = React.useState(null);
+
   const handleSelectDuration = (opt) => {
     setSelectedDuration(opt);
     setStep(2);
   };
 
   const handleSelectDate = (day) => {
+    if (day.isBlocked) {
+      setBlockedNoticeModal({
+        dateStr: day.dateStr,
+        dayNum: day.dayNum,
+        message: 'This date or time range has been blocked by studio administration. Booking is unavailable for this slot. Please choose another date from the calendar.'
+      });
+      return;
+    }
     if (!day.isAvailable) return;
     setSelectedDate(day);
     setSelectedTimeSlot(null);
@@ -675,7 +685,7 @@ export default function BookingTool({ managerSettings, bookings = [], registered
                 {calendarDays.map((day, idx) => (
                   <button
                     key={idx}
-                    disabled={!day.isAvailable}
+                    disabled={day.isPast || (!day.isAvailable && !day.isBlocked)}
                     onClick={() => handleSelectDate(day)}
                     title={day.isBlocked ? 'This date has been blocked by studio administration.' : ''}
                     className={`h-11 xs:h-12 sm:h-14 border text-xs sm:text-sm font-bold rounded-lg transition-all flex flex-col justify-between p-1 sm:p-2 relative ${selectedDate?.dateStr === day.dateStr
@@ -1288,6 +1298,40 @@ export default function BookingTool({ managerSettings, bookings = [], registered
         )}
 
       </div>
+
+      {/* BLOCKED DATE POPUP ALERT NOTICE MODAL */}
+      {blockedNoticeModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-fade-in font-sans">
+          <div className="bg-white border border-zinc-200 rounded-2xl max-w-md w-full p-6 text-black relative shadow-2xl animate-scale-in text-center">
+            <button
+              onClick={() => setBlockedNoticeModal(null)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-black p-1.5 hover:bg-zinc-100 rounded-lg transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="w-14 h-14 bg-black text-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-zinc-800 shadow-md">
+              <AlertCircle size={32} />
+            </div>
+
+            <h4 className="text-base font-black uppercase text-black mb-2 tracking-wider">
+              STUDIO DATE BLOCKED
+            </h4>
+
+            <p className="text-xs text-zinc-700 font-medium leading-relaxed mb-6 bg-zinc-50 border border-zinc-200/80 p-4 rounded-xl text-center">
+              This date or time range has been blocked by studio administration. Booking is unavailable for this slot. Please choose another date from the calendar.
+            </p>
+
+            <button
+              onClick={() => setBlockedNoticeModal(null)}
+              className="w-full py-3 bg-black hover:bg-zinc-800 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer"
+            >
+              UNDERSTOOD & CHOOSE ANOTHER DATE
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* SUCCESS TOAST */}
       {copyToast && createPortal(
