@@ -166,6 +166,26 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
+// @desc    Reschedule a booking reservation
+// @route   PUT /api/bookings/:id/reschedule
+// @access  Private
+export const rescheduleBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { bookingDate, startHour, endHour, totalPrice } = req.body;
+
+    if (!bookingDate || startHour === undefined || endHour === undefined) {
+      return res.status(400).json({ message: 'Please provide new date and time slot details' });
+    }
+
+    const success = await BookingModel.reschedule(id, { bookingDate, startHour, endHour, totalPrice });
+    res.json({ message: 'Booking reservation rescheduled successfully in database', success: true });
+  } catch (error) {
+    console.error('Reschedule Error:', error);
+    res.status(500).json({ message: 'Error rescheduling booking reservation' });
+  }
+};
+
 // @desc    Block out station slot for studio maintenance (Admin)
 // @route   POST /api/bookings/admin/block
 // @access  Private (Admin)

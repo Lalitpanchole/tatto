@@ -65,6 +65,7 @@ export const bookingAPI = {
   getMyBookings: () => fetchWithAuth('/bookings/my-bookings', { method: 'GET' }),
   getAdminBookings: (location = 'Zurich') => fetchWithAuth(`/bookings/admin/all?location=${location}`, { method: 'GET' }),
   cancelBooking: (id) => fetchWithAuth(`/bookings/${id}/cancel`, { method: 'PATCH' }),
+  rescheduleBooking: (id, rescheduleData) => fetchWithAuth(`/bookings/${id}/reschedule`, { method: 'PUT', body: JSON.stringify(rescheduleData) }),
   blockSlot: (blockData) => fetchWithAuth('/bookings/admin/block', { method: 'POST', body: JSON.stringify(blockData) }),
 };
 

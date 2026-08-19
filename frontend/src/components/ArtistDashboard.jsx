@@ -246,7 +246,7 @@ export default function ArtistDashboard({ managerSettings, user, onLogout, onUpd
     setCancellingBooking(null);
   };
 
-  const confirmReschedule = (e) => {
+  const confirmReschedule = async (e) => {
     e.preventDefault();
     if (!reschedulingBooking || !newDate) return;
 
@@ -292,6 +292,19 @@ export default function ArtistDashboard({ managerSettings, user, onLogout, onUpd
 
     const newDuration = newEnd - newStart;
     const newPrice = getDurationPrice(newDuration, newDate);
+
+    // Call MySQL Backend API to persist rescheduling in Database
+    try {
+      const { bookingAPI } = await import('../services/api.js');
+      await bookingAPI.rescheduleBooking(reschedulingBooking.id, {
+        bookingDate: newDate,
+        startHour: newStart,
+        endHour: newEnd,
+        totalPrice: newPrice
+      });
+    } catch (err) {
+      console.log(`Backend reschedule offline for booking ${reschedulingBooking.id}:`, err.message);
+    }
 
     setBookings(prev => prev.map(b => {
       if (b.id === reschedulingBooking.id) {

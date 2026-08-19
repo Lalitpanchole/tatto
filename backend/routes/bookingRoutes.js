@@ -6,6 +6,7 @@ import {
   getMyBookings, 
   getAdminBookings, 
   cancelBooking, 
+  rescheduleBooking,
   blockStationSlot 
 } from '../controllers/bookingController.js';
 import { protect, adminOnly } from '../middlewares/authMiddleware.js';
@@ -22,6 +23,7 @@ router.post('/public', createPublicBooking);
 router.post('/', protect, createBooking);
 router.get('/my-bookings', protect, getMyBookings);
 router.patch('/:id/cancel', protect, cancelBooking);
+router.put('/:id/reschedule', protect, rescheduleBooking);
 
 // Admin dashboard master log route (Live sync across browsers)
 router.get('/admin/all', getAdminBookings);

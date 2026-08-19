@@ -62,6 +62,18 @@ export const BookingModel = {
   updateStatus: async (id, status) => {
     const [result] = await db.query('UPDATE bookings SET status = ? WHERE id = ?', [status, id]);
     return result.affectedRows > 0;
+  },
+
+  // Reschedule booking date & time
+  reschedule: async (id, { bookingDate, startHour, endHour, totalPrice }) => {
+    const cleanDate = typeof bookingDate === 'string' ? bookingDate.split('T')[0].split(' ')[0] : bookingDate;
+    const [result] = await db.query(
+      `UPDATE bookings 
+       SET booking_date = ?, start_hour = ?, end_hour = ?, total_price = ?, status = 'Confirmed'
+       WHERE id = ?`,
+      [cleanDate, startHour, endHour, totalPrice, id]
+    );
+    return result.affectedRows > 0;
   }
 };
 
