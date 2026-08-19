@@ -121,11 +121,12 @@ export default function BookingTool({ managerSettings, bookings = [], registered
 
     // Fetch real bookings and blocks from the global database that aren't cancelled
     return bookings
-      .filter(b => b.date === targetDateStr && b.status !== 'Cancelled')
+      .filter(b => (b.date === targetDateStr || (b.date && b.date.startsWith(targetDateStr))) && b.status !== 'Cancelled')
       .map(b => ({
         station: Number(b.station),
         start: Number(b.start),
-        end: Number(b.end)
+        end: Number(b.end),
+        status: b.status
       }));
   };
 
@@ -172,6 +173,11 @@ export default function BookingTool({ managerSettings, bookings = [], registered
       const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const isPast = dateStr < todayYMD;
 
+      const isBlocked = bookings.some(b => 
+        b.status === 'Blocked' && 
+        (b.date === dateStr || (b.date && b.date.startsWith(dateStr)))
+      );
+
       let spotsLeft = 0;
       let isAvailable = isOperatingDay && !isPast;
 
@@ -186,6 +192,7 @@ export default function BookingTool({ managerSettings, bookings = [], registered
         dateStr,
         isToday: dateStr === todayYMD,
         isPast,
+        isBlocked,
         isAvailable,
         spotsLeft,
         dayName: date.toLocaleDateString('en-US', { weekday: 'short' })
@@ -670,19 +677,26 @@ export default function BookingTool({ managerSettings, bookings = [], registered
                     key={idx}
                     disabled={!day.isAvailable}
                     onClick={() => handleSelectDate(day)}
+                    title={day.isBlocked ? 'This date has been blocked by studio administration.' : ''}
                     className={`h-11 xs:h-12 sm:h-14 border text-xs sm:text-sm font-bold rounded-lg transition-all flex flex-col justify-between p-1 sm:p-2 relative ${selectedDate?.dateStr === day.dateStr
                         ? 'bg-studio-pink text-black border-studio-pink shadow-[0_0_10px_#FF66C4]'
-                        : day.isAvailable
-                          ? day.isToday
-                            ? 'bg-black text-white border-black hover:border-studio-pink hover:scale-105 shadow-sm'
-                            : 'bg-white border-zinc-200 text-black hover:border-studio-pink hover:scale-105 shadow-sm'
-                          : day.isPast
-                            ? 'bg-zinc-50 border-zinc-100 text-zinc-200 cursor-not-allowed'
-                            : 'bg-zinc-100/60 border-zinc-100 text-zinc-300 cursor-not-allowed'
+                        : day.isBlocked
+                          ? 'bg-black text-white border-black shadow-md'
+                          : day.isAvailable
+                            ? day.isToday
+                              ? 'bg-black text-white border-black hover:border-studio-pink hover:scale-105 shadow-sm'
+                              : 'bg-white border-zinc-200 text-black hover:border-studio-pink hover:scale-105 shadow-sm'
+                            : day.isPast
+                              ? 'bg-zinc-50 border-zinc-100 text-zinc-200 cursor-not-allowed'
+                              : 'bg-zinc-100/60 border-zinc-100 text-zinc-300 cursor-not-allowed'
                       }`}
                   >
                     <span>{day.dayNum}</span>
-                    {day.isAvailable ? (
+                    {day.isBlocked ? (
+                      <span className="text-[7px] xs:text-[8px] sm:text-[9px] font-sans font-black text-pink-400 uppercase tracking-tighter block truncate max-w-full">
+                        BLOCKED
+                      </span>
+                    ) : day.isAvailable ? (
                       <span className="text-[7px] xs:text-[8px] sm:text-[9px] font-sans font-semibold opacity-70 block truncate max-w-full">
                         {day.spotsLeft !== undefined ? `${day.spotsLeft} Spots` : 'Open'}
                       </span>
@@ -703,7 +717,7 @@ export default function BookingTool({ managerSettings, bookings = [], registered
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3.5 h-3.5 bg-black rounded-md inline-block" />
-                  Today
+                  Studio Blocked / Today
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3.5 h-3.5 bg-zinc-100 border border-zinc-150 rounded-md inline-block" />
@@ -743,10 +757,13 @@ export default function BookingTool({ managerSettings, bookings = [], registered
                 </h5>
 
                 {availableSlots.length === 0 ? (
-                  <div className="p-8 bg-zinc-50 border border-zinc-200 text-center font-sans text-zinc-400 rounded-xl">
-                    <AlertCircle size={24} className="mx-auto mb-2 text-studio-pink" />
-                    No slots of {selectedDuration.hours} continuous hours can be booked on this date.
-                    Please choose another day or select shorter hours.
+                  <div className="p-8 bg-black text-white border border-zinc-800 text-center font-sans rounded-xl space-y-2 shadow-lg">
+                    <AlertCircle size={28} className="mx-auto text-pink-500 mb-1" />
+                    <h5 className="text-sm font-black uppercase text-white tracking-wider">STUDIO BLOCKED / NO SLOTS AVAILABLE</h5>
+                    <p className="text-xs text-zinc-300">
+                      This date or time range has been blocked by studio administration. Booking is unavailable for this slot.
+                    </p>
+                    <p className="text-xs text-zinc-400">Please choose another date from the calendar.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
