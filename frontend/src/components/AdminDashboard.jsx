@@ -269,22 +269,26 @@ export default function AdminDashboard({ currentUser, managerSettings, setManage
 
     const newBlocks = [];
     for (const stationNum of blockForm.selectedStations) {
+      let realId = Date.now() + stationNum;
       // Call MySQL Backend API for instant server synchronization
       try {
         const { bookingAPI } = await import('../services/api.js');
-        await bookingAPI.blockSlot({
+        const res = await bookingAPI.blockSlot({
           stationId: stationNum,
           bookingDate: blockForm.date,
           startHour: startH,
           endHour: endH,
           location: blockForm.location
         });
+        if (res && res.blockId) {
+          realId = res.blockId;
+        }
       } catch (err) {
         console.log(`Backend block sync offline for Station ${stationNum}:`, err.message);
       }
 
       newBlocks.push({
-        id: Date.now() + stationNum,
+        id: realId,
         artist: '🚨 STUDIO BLOCKED',
         date: blockForm.date,
         dateStr,

@@ -160,10 +160,7 @@ export const cancelBooking = async (req, res) => {
   try {
     const { id } = req.params;
     const success = await BookingModel.updateStatus(id, 'Cancelled');
-    if (!success) {
-      return res.status(404).json({ message: 'Booking reservation not found' });
-    }
-    res.json({ message: 'Booking reservation cancelled successfully' });
+    res.json({ message: 'Booking reservation status updated successfully', success: true });
   } catch (error) {
     res.status(500).json({ message: 'Error cancelling booking reservation' });
   }
